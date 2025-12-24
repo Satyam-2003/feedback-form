@@ -8,6 +8,7 @@ export async function POST(request: Request) {
 
   try {
     const { username, email, password } = await request.json();
+
     const existingUserVerifiedByUsername = await UserModel.findOne({
       username,
       isVerified: true,
@@ -24,7 +25,6 @@ export async function POST(request: Request) {
     }
 
     const existingUserByEnail = await UserModel.findOne({ email });
-
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     if (existingUserByEnail) {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         return Response.json(
           {
             success: false,
-            message: "Username is already exist with this email",
+            message: "Email already registered",
           },
           { status: 400 }
         );
@@ -69,11 +69,11 @@ export async function POST(request: Request) {
       verifyCode
     );
 
-    if (emailResponse.success) {
+    if (!emailResponse.success) {
       return Response.json(
         {
           success: false,
-          message: "Username is already taken",
+          message: "Failed to send verification email",
         },
         { status: 500 }
       );
