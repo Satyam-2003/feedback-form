@@ -3,20 +3,30 @@ import VerificationEmail from "@/emails/verificationEmail";
 import { ApiResponse } from "@/types/ApiResponse";
 
 export async function sendVerificationEmail(
-    email: string,
-    username: string,
-    verifyCode: string
+  email: string,
+  username: string,
+  verifyCode: string
 ): Promise<ApiResponse> {
-    try {
-     await resend.emails.send({
-      from: '<onboarding@resend.dev>',
-      to: email,
-      subject: 'Verification code',
-      react: VerificationEmail({username, otp: verifyCode}),
-    });
-        return {success: true, message: 'Send verification email successfully'}
-    } catch (emailError) {
-        console.log("Error while sending verificaion email", emailError)
-        return {success: false, message: 'Failed to send verification email'}
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is missing");
     }
+
+    const response = await resend.emails.send({
+      from: "Mystery Message <onboarding@resend.dev>",
+      to: email,
+      subject: "Your Verification code",
+      react: VerificationEmail({ username, otp: verifyCode }),
+    });
+
+    if (!response || response.error) {
+      throw new Error("Resend failed to send email");
+    }
+
+    return { success: true, message: "Verification email sent successfully" };
+  } catch (emailError) {
+    
+    console.log("Error sending verificaion email", emailError);
+    return { success: false, message: "Failed to send verification email" };
+  }
 }
