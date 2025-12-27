@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text " },
+        identifier: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: any): Promise<any> {
@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   pages: {
-    signIn: "sign-in",
+    signIn: "/sign-in",
   },
 
   session: {
